@@ -1,34 +1,43 @@
 # System Performance Analyzer
 
-A Python-based desktop application for monitoring and analyzing system performance in real time.
+A desktop application built with Python and Tkinter to monitor and analyze system performance in real time.
 
 ## Features
 
-- CPU, Memory, Disk & Network monitoring
+- CPU, RAM, Disk & Network monitoring
 - Real-time performance graphs
-- Process monitoring
-- System health score
-- Performance analytics
-- System benchmarking
-- Optimization suggestions
-- SQLite-based data storage
-- PDF report generation
-- Light & Dark mode
+- Running process manager
+- Process details and termination
+- System information
+- Performance threshold alerts
+- TXT & JSON report generation
+- Simple and user-friendly GUI
 
 ## Tech Stack
 
 - Python
-- CustomTkinter
 - Tkinter
-- psutil
+- Psutil
 - Matplotlib
-- NumPy
-- SQLite
-- ReportLab
+- Threading
+- JSON
 
-## Run
+## Installation
 
 ```bash
-pip install -r requirements.txt
-python3 code/system_performance_analyzer.py
+pip install psutil matplotlib
+```
 
+Run the application:
+
+```bash
+python System_Performance_Analyzer_Clean_v4.py
+```
+
+## Developer
+
+**Prabhmeet Singh**
+
+## License
+
+This project is created for educational and portfolio purposes.
