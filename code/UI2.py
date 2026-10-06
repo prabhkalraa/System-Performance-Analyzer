@@ -8,7 +8,6 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-import numpy as np
 from collections import deque
 import subprocess
 import sys
@@ -23,10 +22,10 @@ class SystemPerformanceAnalyzer:
         self.start_monitoring()
         
     def setup_window(self):
-        """Configure the main window for 13-inch Mac"""
-        self.root.title("System Performance Analyzer - Architechs")
+        """Configure the main application window"""
+        self.root.title("System Performance Analyzer")
         
-        # Optimized for 13-inch MacBook (1440x900 or 1280x800)
+        # Set a practical default window size
         window_width = 1200
         window_height = 800
         
@@ -53,7 +52,6 @@ class SystemPerformanceAnalyzer:
         """Create modern styling for the application"""
         style = ttk.Style()
         
-        # Configure modern theme
         style.theme_use('clam')
         
         # Header style
@@ -103,8 +101,6 @@ class SystemPerformanceAnalyzer:
         # Content area
         self.create_content_area()
         
-        # Team info section
-        self.create_team_info()
         
     def create_header(self):
         """Create the header section"""
@@ -169,7 +165,6 @@ class SystemPerformanceAnalyzer:
         overview_frame = ttk.Frame(self.notebook, padding="20")
         self.notebook.add(overview_frame, text="Overview")
         
-        # Configure grid
         overview_frame.columnconfigure((0, 1), weight=1)
         overview_frame.rowconfigure((0, 1), weight=1)
         
@@ -219,7 +214,6 @@ class SystemPerformanceAnalyzer:
         cpu_frame = ttk.Frame(self.notebook, padding="20")
         self.notebook.add(cpu_frame, text="CPU")
         
-        # Configure grid
         cpu_frame.columnconfigure(0, weight=1)
         cpu_frame.rowconfigure(1, weight=1)
         
@@ -240,7 +234,6 @@ class SystemPerformanceAnalyzer:
         graph_frame = ttk.LabelFrame(cpu_frame, text="CPU Usage Over Time", padding="10")
         graph_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Create matplotlib figure
         self.cpu_fig = Figure(figsize=(8, 4), dpi=100)
         self.cpu_ax = self.cpu_fig.add_subplot(111)
         self.cpu_canvas = FigureCanvasTkAgg(self.cpu_fig, master=graph_frame)
@@ -253,7 +246,6 @@ class SystemPerformanceAnalyzer:
         memory_frame = ttk.Frame(self.notebook, padding="20")
         self.notebook.add(memory_frame, text="Memory")
         
-        # Configure grid
         memory_frame.columnconfigure(0, weight=1)
         memory_frame.rowconfigure(1, weight=1)
         
@@ -274,7 +266,6 @@ class SystemPerformanceAnalyzer:
         graph_frame = ttk.LabelFrame(memory_frame, text="Memory Usage Over Time", padding="10")
         graph_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Create matplotlib figure
         self.memory_fig = Figure(figsize=(8, 4), dpi=100)
         self.memory_ax = self.memory_fig.add_subplot(111)
         self.memory_canvas = FigureCanvasTkAgg(self.memory_fig, master=graph_frame)
@@ -287,7 +278,6 @@ class SystemPerformanceAnalyzer:
         disk_frame = ttk.Frame(self.notebook, padding="20")
         self.notebook.add(disk_frame, text="Disk")
         
-        # Configure grid
         disk_frame.columnconfigure(0, weight=1)
         disk_frame.rowconfigure(1, weight=1)
         
@@ -316,7 +306,6 @@ class SystemPerformanceAnalyzer:
         graph_frame = ttk.LabelFrame(disk_frame, text="Disk I/O Activity", padding="10")
         graph_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Create matplotlib figure
         self.disk_fig = Figure(figsize=(8, 4), dpi=100)
         self.disk_ax = self.disk_fig.add_subplot(111)
         self.disk_canvas = FigureCanvasTkAgg(self.disk_fig, master=graph_frame)
@@ -329,7 +318,6 @@ class SystemPerformanceAnalyzer:
         network_frame = ttk.Frame(self.notebook, padding="20")
         self.notebook.add(network_frame, text="Network")
         
-        # Configure grid
         network_frame.columnconfigure(0, weight=1)
         network_frame.rowconfigure(1, weight=1)
         
@@ -350,7 +338,6 @@ class SystemPerformanceAnalyzer:
         graph_frame = ttk.LabelFrame(network_frame, text="Network Activity", padding="10")
         graph_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Create matplotlib figure
         self.network_fig = Figure(figsize=(8, 4), dpi=100)
         self.network_ax = self.network_fig.add_subplot(111)
         self.network_canvas = FigureCanvasTkAgg(self.network_fig, master=graph_frame)
@@ -363,7 +350,6 @@ class SystemPerformanceAnalyzer:
         process_frame = ttk.Frame(self.notebook, padding="20")
         self.notebook.add(process_frame, text="Processes")
         
-        # Configure grid
         process_frame.columnconfigure(0, weight=1)
         process_frame.rowconfigure(1, weight=1)
         
@@ -413,32 +399,6 @@ class SystemPerformanceAnalyzer:
         self.process_tree.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
         
-    def create_team_info(self):
-        """Create the team information section"""
-        team_frame = ttk.LabelFrame(self.main_frame, text="Team Information", padding="15")
-        team_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(10, 0))
-        
-        # Team header
-        team_header = ttk.Label(team_frame, text="Team Architechs - SE(OS)-VI-T250", 
-                               style='Subheader.TLabel')
-        team_header.grid(row=0, column=0, columnspan=3, pady=(0, 10))
-        
-        # Team members
-        members = [
-            ("Team Leader", "Harshit Jasuja", "220211228", "harshitjasuja70@gmail.com"),
-            ("Member 2", "Shivendra Srivastava", "220211349", "shivendrasri999@gmail.com"),
-            ("Member 3", "Yashika Dixit", "22022577", "yashikadixit1611@gmail.com")
-        ]
-        
-        for i, (role, name, student_id, email) in enumerate(members):
-            member_frame = ttk.Frame(team_frame)
-            member_frame.grid(row=i+1, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
-            
-            ttk.Label(member_frame, text=f"{role}: {name}", 
-                     font=('SF Pro Text', 11, 'bold')).grid(row=0, column=0, sticky=tk.W)
-            ttk.Label(member_frame, text=f"ID: {student_id} | Email: {email}",
-                     style='Info.TLabel').grid(row=1, column=0, sticky=tk.W)
-    
     def setup_cpu_graph(self):
         """Setup the CPU usage graph"""
         self.cpu_ax.set_title('CPU Usage (%)', fontsize=12, fontweight='bold')
@@ -540,7 +500,7 @@ class SystemPerformanceAnalyzer:
                 # Update UI in main thread
                 self.root.after(0, self.update_ui)
                 
-                time.sleep(1)  # Update every 1 second
+                time.sleep(1)
                 
             except Exception as e:
                 print(f"Monitoring error: {e}")
@@ -786,57 +746,6 @@ class SystemPerformanceAnalyzer:
         if hasattr(self, 'monitor_thread') and self.monitor_thread.is_alive():
             self.monitor_thread.join(timeout=1.0)
         self.root.destroy()
-
-
-class ModernButton(tk.Canvas):
-    """Custom modern button widget"""
-    def __init__(self, parent, text="", command=None, bg_color="#007AFF", 
-                 hover_color="#0051D5", text_color="white", width=120, height=40):
-        super().__init__(parent, width=width, height=height, highlightthickness=0)
-        
-        self.command = command
-        self.bg_color = bg_color
-        self.hover_color = hover_color
-        self.text_color = text_color
-        self.is_hovered = False
-        
-        # Draw button
-        self.draw_button(text)
-        
-        # Bind events
-        self.bind("<Button-1>", self.on_click)
-        self.bind("<Enter>", self.on_enter)
-        self.bind("<Leave>", self.on_leave)
-        
-    def draw_button(self, text):
-        """Draw the button with rounded corners"""
-        self.delete("all")
-        
-        color = self.hover_color if self.is_hovered else self.bg_color
-        
-        # Draw rounded rectangle (simplified)
-        self.create_rectangle(0, 0, self.winfo_reqwidth(), self.winfo_reqheight(),
-                             fill=color, outline="", width=0)
-        
-        # Draw text
-        self.create_text(self.winfo_reqwidth()//2, self.winfo_reqheight()//2,
-                        text=text, fill=self.text_color, 
-                        font=('SF Pro Text', 11, 'normal'))
-        
-    def on_click(self, event):
-        """Handle button click"""
-        if self.command:
-            self.command()
-            
-    def on_enter(self, event):
-        """Handle mouse enter"""
-        self.is_hovered = True
-        self.draw_button(self.itemcget(self.find_all()[-1], "text"))
-        
-    def on_leave(self, event):
-        """Handle mouse leave"""
-        self.is_hovered = False
-        self.draw_button(self.itemcget(self.find_all()[-1], "text"))
 
 
 def main():
