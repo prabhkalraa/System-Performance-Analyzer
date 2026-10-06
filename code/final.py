@@ -9,16 +9,11 @@ import time
 import json
 import os
 from datetime import datetime, timedelta
-import numpy as np
 from collections import deque
-import webbrowser
 import csv
 import sqlite3
 import platform
-import subprocess
 import sys
-import gc
-import socket
 
 # Try to import additional libraries
 try:
@@ -31,11 +26,6 @@ try:
 except ImportError:
     PDF_AVAILABLE = False
 
-try:
-    import requests
-    REQUESTS_AVAILABLE = True
-except ImportError:
-    REQUESTS_AVAILABLE = False
 
 # Set appearance mode and color theme
 ctk.set_appearance_mode("light")
@@ -44,7 +34,7 @@ ctk.set_default_color_theme("blue")
 class SystemPerformanceAnalyzer:
     def __init__(self, root):
         self.root = root
-        self.root.title("System Performance Analyzer & Optimizer v2.0 - Architechs Team")
+        self.root.title("System Performance Analyzer")
         self.root.geometry("1500x1000")
         self.root.minsize(1300, 900)
         
@@ -91,7 +81,6 @@ class SystemPerformanceAnalyzer:
         self.refresh_rate = 1000
         self.font_size = 12
         self.notifications_enabled = True
-        self.auto_optimize = False
         self.data_logging = True
         self.alert_thresholds = {
             'cpu': 80,
@@ -100,7 +89,7 @@ class SystemPerformanceAnalyzer:
             'temperature': 80
         }
         
-        # AI and analytics data
+        # Analytics data
         self.performance_history = []
         self.optimization_suggestions = []
         self.system_health_score = 100
@@ -170,13 +159,11 @@ class SystemPerformanceAnalyzer:
             'platform': platform.platform(),
             'processor': platform.processor(),
             'architecture': platform.architecture(),
-            'hostname': socket.gethostname(),
             'python_version': platform.python_version(),
             'cpu_count': psutil.cpu_count(),
             'memory_total': psutil.virtual_memory().total,
             'disk_total': psutil.disk_usage('/').total,
             'boot_time': psutil.boot_time(),
-            'network_interfaces': list(psutil.net_if_addrs().keys())
         }
         
         # Handle CPU frequency with error handling
@@ -197,14 +184,14 @@ class SystemPerformanceAnalyzer:
         
         title_label = ctk.CTkLabel(
             title_frame,
-            text="🚀 System Performance Analyzer & Optimizer v2.0",
+            text="🚀 System Performance Analyzer",
             font=ctk.CTkFont(size=22, weight="bold")
         )
         title_label.pack(pady=10)
         
         subtitle_label = ctk.CTkLabel(
             title_frame,
-            text=f"Developed by Architechs Team - SE(OS)-VI-T250 | {self.system_info['hostname']}",
+            text="System monitoring and performance analysis",
             font=ctk.CTkFont(size=12)
         )
         subtitle_label.pack(pady=(0, 10))
@@ -226,13 +213,11 @@ class SystemPerformanceAnalyzer:
         
         # Create tabs
         self.dashboard_tab = self.notebook.add("📊 Dashboard")
-        self.ai_tab = self.notebook.add("🤖 AI Optimizer")
+        self.ai_tab = self.notebook.add("📊 Performance Analysis")
         self.analytics_tab = self.notebook.add("📈 Analytics")
         self.benchmark_tab = self.notebook.add("⚡ Benchmark")
         self.system_tab = self.notebook.add("💻 System Info")
         self.settings_tab = self.notebook.add("⚙️ Settings")
-        self.theory_tab = self.notebook.add("📚 Theory")
-        self.team_tab = self.notebook.add("👥 Team Info")
         self.help_tab = self.notebook.add("❓ Help")
         
         # Create content for each tab
@@ -242,8 +227,6 @@ class SystemPerformanceAnalyzer:
         self.create_benchmark_content()
         self.create_system_info_content()
         self.create_settings_content()
-        self.create_theory_content()
-        self.create_team_info_content()
         self.create_help_content()
         
     def create_dashboard_content(self):
@@ -426,25 +409,6 @@ class SystemPerformanceAnalyzer:
         )
         process_btn.grid(row=0, column=2, padx=10, pady=10)
         
-        # System cleanup button
-        cleanup_btn = ctk.CTkButton(
-            parent,
-            text="🧹 System Cleanup",
-            command=self.run_system_cleanup,
-            font=ctk.CTkFont(size=12, weight="bold")
-        )
-        cleanup_btn.grid(row=0, column=3, padx=10, pady=10)
-        
-        # Emergency optimization
-        emergency_btn = ctk.CTkButton(
-            parent,
-            text="🚨 Emergency Optimize",
-            command=self.emergency_optimization,
-            font=ctk.CTkFont(size=12, weight="bold"),
-            fg_color="red"
-        )
-        emergency_btn.grid(row=0, column=4, padx=10, pady=10)
-        
     def create_analytics_content(self):
         """Create analytics and historical data tab"""
         main_container = ctk.CTkScrollableFrame(self.analytics_tab)
@@ -616,7 +580,6 @@ class SystemPerformanceAnalyzer:
                     font=ctk.CTkFont(size=14, weight="bold")).pack(pady=(15, 10))
         
         basic_info = [
-            f"Hostname: {self.system_info['hostname']}",
             f"Platform: {self.system_info['platform']}",
             f"Processor: {self.system_info['processor']}",
             f"Architecture: {self.system_info['architecture'][0]}",
@@ -662,14 +625,14 @@ class SystemPerformanceAnalyzer:
         self.populate_system_info()
         
     def create_ai_optimizer_content(self):
-        """Create enhanced AI optimizer content"""
+        """Create performance analysis content"""
         main_container = ctk.CTkScrollableFrame(self.ai_tab)
         main_container.pack(fill='both', expand=True, padx=20, pady=20)
         
         # AI title
         title_label = ctk.CTkLabel(
             main_container,
-            text="🧠 Advanced AI-Powered System Optimization",
+            text="🧠 Performance Analysis & Recommendations",
             font=ctk.CTkFont(size=18, weight="bold")
         )
         title_label.pack(pady=(0, 20))
@@ -684,7 +647,7 @@ class SystemPerformanceAnalyzer:
         ai_status_frame = ctk.CTkFrame(status_frame)
         ai_status_frame.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
         
-        ctk.CTkLabel(ai_status_frame, text="🤖 AI Status", 
+        ctk.CTkLabel(ai_status_frame, text="📊 Analysis Status", 
                     font=ctk.CTkFont(size=14, weight="bold")).pack(pady=(15, 5))
         
         self.ai_status_label = ctk.CTkLabel(
@@ -714,7 +677,7 @@ class SystemPerformanceAnalyzer:
         
         suggestions_title = ctk.CTkLabel(
             suggestions_frame,
-            text="💡 AI Optimization Suggestions",
+            text="💡 Performance Recommendations",
             font=ctk.CTkFont(size=16, weight="bold")
         )
         suggestions_title.pack(pady=(15, 10))
@@ -730,31 +693,15 @@ class SystemPerformanceAnalyzer:
         ai_controls_frame = ctk.CTkFrame(main_container)
         ai_controls_frame.pack(fill='x', pady=10)
         
-        ai_controls_frame.grid_columnconfigure((0, 1, 2), weight=1)
+        ai_controls_frame.grid_columnconfigure(0, weight=1)
         
         analyze_btn = ctk.CTkButton(
             ai_controls_frame,
-            text="🔍 Deep Analysis",
+            text="🔍 Run Analysis",
             command=self.run_ai_analysis,
             font=ctk.CTkFont(size=12, weight="bold")
         )
         analyze_btn.grid(row=0, column=0, padx=10, pady=10)
-        
-        optimize_btn = ctk.CTkButton(
-            ai_controls_frame,
-            text="⚡ Apply Optimizations",
-            command=self.apply_optimizations,
-            font=ctk.CTkFont(size=12, weight="bold")
-        )
-        optimize_btn.grid(row=0, column=1, padx=10, pady=10)
-        
-        auto_optimize_btn = ctk.CTkButton(
-            ai_controls_frame,
-            text="🤖 Auto Optimize",
-            command=self.toggle_auto_optimize,
-            font=ctk.CTkFont(size=12, weight="bold")
-        )
-        auto_optimize_btn.grid(row=0, column=2, padx=10, pady=10)
         
         # Start AI analysis
         self.start_ai_analysis()
@@ -915,866 +862,9 @@ class SystemPerformanceAnalyzer:
         )
         notifications_check.pack(anchor='w', padx=20, pady=5)
         
-        self.auto_optimize_var = ctk.BooleanVar(value=self.auto_optimize)
-        auto_optimize_check = ctk.CTkCheckBox(
-            notif_options_frame,
-            text="Enable automatic optimization",
-            variable=self.auto_optimize_var,
-            command=self.toggle_auto_optimize
-        )
-        auto_optimize_check.pack(anchor='w', padx=20, pady=5)
         
-    def create_theory_content(self):
-        """Create comprehensive theory and documentation"""
-        main_container = ctk.CTkScrollableFrame(self.theory_tab)
-        main_container.pack(fill='both', expand=True, padx=20, pady=20)
         
-        # Title
-        title_label = ctk.CTkLabel(
-            main_container,
-            text="📚 Comprehensive Theory & Technical Documentation",
-            font=ctk.CTkFont(size=18, weight="bold")
-        )
-        title_label.pack(pady=(0, 20))
         
-        # Theory textbox
-        self.theory_textbox = ctk.CTkTextbox(
-            main_container,
-            font=ctk.CTkFont(size=11),
-            height=600
-        )
-        self.theory_textbox.pack(fill='both', expand=True)
-        
-        # Insert enhanced documentation
-        self.insert_enhanced_theory_content()
-        
-    def insert_enhanced_theory_content(self):
-        """Insert comprehensive enhanced documentation"""
-        content = """📖 SYSTEM PERFORMANCE ANALYZER & OPTIMIZER v2.0
-Comprehensive Technical Documentation & Theory
-
-🎯 PROJECT OVERVIEW & EVOLUTION
-═══════════════════════════════════════════════════════════════
-
-This System Performance Analyzer & Optimizer v2.0 represents a significant evolution in system monitoring and optimization technology. Built using cutting-edge Python frameworks and advanced algorithms, it provides comprehensive real-time monitoring, intelligent analysis, and automated optimization capabilities for modern computing systems.
-
-The application serves as both a practical tool for system administrators and an educational platform demonstrating advanced software engineering principles, artificial intelligence integration, and modern GUI development techniques.
-
-🚀 PROJECT MOTIVATION & REAL-WORLD APPLICATIONS
-═══════════════════════════════════════════════════════════════
-
-In today's digital ecosystem, system performance directly correlates with productivity, user satisfaction, and operational efficiency. The motivation for this project stems from several critical industry needs:
-
-1. ENTERPRISE SYSTEM MANAGEMENT
-   • Large-scale server monitoring and optimization
-   • Predictive maintenance and failure prevention
-   • Resource allocation and capacity planning
-   • Cost optimization through efficient resource utilization
-
-2. PERSONAL COMPUTING OPTIMIZATION
-   • Gaming performance enhancement
-   • Content creation workflow optimization
-   • Battery life extension for mobile devices
-   • Thermal management and noise reduction
-
-3. EDUCATIONAL AND RESEARCH APPLICATIONS
-   • Computer science education tool
-   • Performance analysis research platform
-   • Algorithm testing and validation
-   • System behavior modeling and simulation
-
-4. INDUSTRIAL IoT AND EDGE COMPUTING
-   • Real-time monitoring of industrial systems
-   • Edge device performance optimization
-   • Predictive maintenance in manufacturing
-   • Quality assurance in production environments
-
-🎯 COMPREHENSIVE OBJECTIVES & GOALS
-═══════════════════════════════════════════════════════════════
-
-PRIMARY OBJECTIVES:
-
-1. Real-time Performance Monitoring
-   • Multi-metric system monitoring (CPU, Memory, Disk, Network, Temperature)
-   • High-frequency data collection with minimal system overhead
-   • Historical data analysis and trend identification
-   • Cross-platform compatibility and consistency
-
-2. Intelligent AI-based Optimization
-   • Machine learning-driven performance analysis
-   • Predictive bottleneck detection and prevention
-   • Automated optimization recommendation system
-   • Adaptive learning from user behavior and system patterns
-
-3. Advanced User Interface Design
-   • Modern, responsive GUI using CustomTkinter
-   • Real-time data visualization with interactive charts
-   • Intuitive navigation and user experience
-   • Accessibility features and customization options
-
-4. Comprehensive Reporting and Analytics
-   • Detailed performance reports in multiple formats
-   • Historical trend analysis and pattern recognition
-   • Benchmark testing and performance comparison
-   • Export capabilities for further analysis
-
-5. System Integration and Automation
-   • Seamless integration with operating system APIs
-   • Automated optimization execution with user consent
-   • Scheduled monitoring and maintenance tasks
-   • Integration with external monitoring systems
-
-SECONDARY OBJECTIVES:
-
-• Educational Value: Demonstrate advanced programming concepts and best practices
-• Research Platform: Provide foundation for performance analysis research
-• Extensibility: Modular architecture for easy feature additions
-• Security: Secure handling of system information and user data
-• Scalability: Support for monitoring multiple systems simultaneously
-
-🏗️ ADVANCED SYSTEM ARCHITECTURE & DESIGN PATTERNS
-═══════════════════════════════════════════════════════════════
-
-The application employs a sophisticated multi-layered architecture incorporating modern software design patterns:
-
-1. PRESENTATION LAYER (CustomTkinter GUI)
-   Architecture Pattern: Model-View-Controller (MVC)
-   
-   Components:
-   • Main Application Window (Controller)
-   • Tabbed Interface System (View Manager)
-   • Custom Widget Library (Reusable Components)
-   • Theme Management System (Strategy Pattern)
-   • Event Handling Framework (Observer Pattern)
-   
-   Design Principles:
-   • Separation of Concerns
-   • Single Responsibility Principle
-   • Open/Closed Principle for extensibility
-
-2. BUSINESS LOGIC LAYER (Core Processing)
-   Architecture Pattern: Service-Oriented Architecture (SOA)
-   
-   Services:
-   • Performance Monitoring Service
-   • AI Analysis Engine
-   • Optimization Recommendation Service
-   • Alert Management System
-   • Data Persistence Service
-   
-   Design Patterns:
-   • Factory Pattern for service creation
-   • Singleton Pattern for configuration management
-   • Command Pattern for optimization actions
-
-3. DATA ACCESS LAYER (System Integration)
-   Architecture Pattern: Repository Pattern
-   
-   Components:
-   • System Metrics Repository (psutil integration)
-   • Database Repository (SQLite integration)
-   • File System Repository (log files, exports)
-   • Configuration Repository (settings management)
-   
-   Features:
-   • Data abstraction and encapsulation
-   • Transaction management
-   • Error handling and recovery
-   • Data validation and sanitization
-
-4. ARTIFICIAL INTELLIGENCE LAYER
-   Architecture Pattern: Pipeline Architecture
-   
-   Pipeline Stages:
-   • Data Collection and Preprocessing
-   • Feature Extraction and Engineering
-   • Pattern Recognition and Analysis
-   • Prediction and Recommendation Generation
-   • Feedback Loop and Learning
-   
-   AI Techniques:
-   • Statistical Analysis and Trend Detection
-   • Anomaly Detection Algorithms
-   • Rule-based Expert Systems
-   • Machine Learning Integration (future enhancement)
-
-🔧 COMPREHENSIVE TECHNOLOGY STACK
-═══════════════════════════════════════════════════════════════
-
-CORE TECHNOLOGIES:
-
-1. Programming Language: Python 3.8+
-   Advantages:
-   • Cross-platform compatibility
-   • Rich ecosystem of libraries
-   • Rapid development capabilities
-   • Strong community support
-   • Excellent for data analysis and AI
-
-2. GUI Framework: CustomTkinter
-   Features:
-   • Modern, native-looking interface
-   • Built-in theming support
-   • High DPI display compatibility
-   • Smooth animations and transitions
-   • Extensive widget library
-
-3. Data Visualization: Matplotlib
-   Capabilities:
-   • Real-time chart updates
-   • Multiple chart types and styles
-   • Interactive data exploration
-   • High-quality output for reports
-   • Customizable appearance
-
-4. System Monitoring: psutil
-   Functionality:
-   • Cross-platform system information
-   • Real-time performance metrics
-   • Process and service management
-   • Hardware information access
-   • Network statistics
-
-5. Database: SQLite
-   Benefits:
-   • Embedded database solution
-   • Zero-configuration setup
-   • ACID compliance
-   • Lightweight and efficient
-   • SQL standard compliance
-
-SUPPORTING LIBRARIES:
-
-• NumPy: Numerical computations and array operations
-• Threading: Concurrent operations and background tasks
-• JSON: Configuration and data serialization
-• CSV: Data export and import functionality
-• DateTime: Time-based operations and scheduling
-• Collections: Advanced data structures (deque, defaultdict)
-• Socket: Network operations and system identification
-• Platform: System information and compatibility detection
-
-OPTIONAL ENHANCEMENTS:
-
-• ReportLab: Advanced PDF generation with charts and tables
-• Requests: HTTP client for cloud integration
-• Pandas: Advanced data analysis and manipulation
-• Scikit-learn: Machine learning algorithms
-• TensorFlow/PyTorch: Deep learning capabilities
-
-🤖 ADVANCED AI MODEL ARCHITECTURE & ALGORITHMS
-═══════════════════════════════════════════════════════════════
-
-The AI optimization engine employs a hybrid approach combining multiple techniques:
-
-1. STATISTICAL ANALYSIS ENGINE
-   
-   Moving Average Analysis:
-   • Simple Moving Average (SMA) for trend detection
-   • Exponential Moving Average (EMA) for recent trend emphasis
-   • Weighted Moving Average (WMA) for priority-based analysis
-   
-   Statistical Measures:
-   • Mean, Median, Mode for central tendency
-   • Standard Deviation for variability assessment
-   • Percentiles for threshold determination
-   • Correlation analysis for metric relationships
-
-2. ANOMALY DETECTION SYSTEM
-   
-   Threshold-based Detection:
-   • Static thresholds for critical metrics
-   • Dynamic thresholds based on historical data
-   • Adaptive thresholds using machine learning
-   
-   Pattern-based Detection:
-   • Seasonal pattern recognition
-   • Cyclical behavior identification
-   • Outlier detection using statistical methods
-   • Change point detection for system state changes
-
-3. RULE-BASED EXPERT SYSTEM
-   
-   Knowledge Base:
-   • Performance optimization rules
-   • System-specific recommendations
-   • Hardware-dependent optimizations
-   • Software-specific tuning guidelines
-   
-   Inference Engine:
-   • Forward chaining for recommendation generation
-   • Backward chaining for root cause analysis
-   • Conflict resolution strategies
-   • Certainty factor calculations
-
-4. PREDICTIVE MODELING FRAMEWORK
-   
-   Time Series Forecasting:
-   • ARIMA models for trend prediction
-   • Linear regression for simple predictions
-   • Polynomial regression for complex patterns
-   • Seasonal decomposition for cyclical data
-   
-   Performance Prediction:
-   • Resource utilization forecasting
-   • Bottleneck prediction algorithms
-   • Failure probability estimation
-   • Maintenance scheduling optimization
-
-5. LEARNING AND ADAPTATION MECHANISMS
-   
-   Feedback Integration:
-   • User feedback incorporation
-   • Optimization success tracking
-   • Performance improvement measurement
-   • Recommendation effectiveness analysis
-   
-   Adaptive Algorithms:
-   • Dynamic threshold adjustment
-   • Pattern refinement over time
-   • User behavior learning
-   • System-specific optimization
-
-📊 COMPREHENSIVE PERFORMANCE METRICS & KPIs
-═══════════════════════════════════════════════════════════════
-
-SYSTEM PERFORMANCE METRICS:
-
-1. CPU Metrics:
-   • Overall CPU utilization percentage
-   • Per-core usage distribution
-   • CPU frequency scaling
-   • Process-specific CPU consumption
-   • CPU temperature monitoring
-   • Thermal throttling detection
-   • Context switching rates
-   • Interrupt handling statistics
-
-2. Memory Metrics:
-   • Physical memory usage and availability
-   • Virtual memory statistics
-   • Memory allocation patterns
-   • Page fault rates
-   • Memory-intensive process identification
-   • Cache hit/miss ratios
-   • Memory fragmentation analysis
-   • Swap usage monitoring
-
-3. Storage Metrics:
-   • Disk space utilization
-   • Read/write operations per second (IOPS)
-   • Disk throughput (MB/s)
-   • Average response times
-   • Queue depth monitoring
-   • Disk health indicators (SMART data)
-   • File system performance
-   • Storage device temperature
-
-4. Network Metrics:
-   • Bytes sent/received per second
-   • Packet transmission statistics
-   • Network interface utilization
-   • Connection establishment rates
-   • Bandwidth utilization patterns
-   • Network latency measurements
-   • Error and drop rates
-   • Protocol-specific statistics
-
-5. System Health Metrics:
-   • Overall system health score
-   • Component health indicators
-   • Error and warning counts
-   • System stability metrics
-   • Uptime and availability
-   • Performance degradation indicators
-   • Resource contention levels
-   • System responsiveness
-
-APPLICATION PERFORMANCE METRICS:
-
-• Startup time and initialization speed
-• Memory footprint and resource usage
-• CPU overhead during monitoring
-• Data collection accuracy and precision
-• Chart rendering performance
-• Database operation efficiency
-• Export operation speed
-• User interface responsiveness
-
-🛠️ IMPLEMENTATION CHALLENGES & INNOVATIVE SOLUTIONS
-═══════════════════════════════════════════════════════════════
-
-TECHNICAL CHALLENGES ADDRESSED:
-
-1. Real-time Data Processing Challenge
-   Problem: Maintaining smooth GUI responsiveness while processing high-frequency data
-   
-   Solution Implementation:
-   • Multi-threaded architecture with dedicated monitoring threads
-   • Efficient data structures using collections.deque for bounded memory usage
-   • Asynchronous data updates using tkinter.after() for thread-safe GUI updates
-   • Data buffering and batch processing for improved efficiency
-   • Optimized chart rendering with selective updates
-
-2. Cross-platform Compatibility Challenge
-   Problem: Ensuring consistent behavior across Windows, macOS, and Linux
-   
-   Solution Implementation:
-   • Abstraction layer using psutil for platform-independent system access
-   • Conditional code paths for platform-specific features
-   • Comprehensive testing on multiple operating systems
-   • Graceful degradation for unsupported features
-   • Platform-specific optimizations where necessary
-
-3. Memory Management Challenge
-   Problem: Preventing memory leaks in long-running applications
-   
-   Solution Implementation:
-   • Bounded data structures with automatic cleanup
-   • Explicit garbage collection at strategic points
-   • Weak references for event handling
-   • Resource cleanup in exception handlers
-   • Memory usage monitoring and alerting
-
-4. Performance Optimization Challenge
-   Problem: Minimizing application overhead while maximizing monitoring accuracy
-   
-   Solution Implementation:
-   • Adaptive sampling rates based on system load
-   • Efficient data compression for historical storage
-   • Lazy loading of non-critical components
-   • Caching strategies for frequently accessed data
-   • Optimized database queries and indexing
-
-5. User Experience Challenge
-   Problem: Creating an intuitive interface for both technical and non-technical users
-   
-   Solution Implementation:
-   • Progressive disclosure of advanced features
-   • Context-sensitive help and tooltips
-   • Visual indicators for system status
-   • Customizable interface layouts
-   • Accessibility features for diverse users
-
-INNOVATIVE FEATURES:
-
-• Adaptive AI that learns from user behavior and system patterns
-• Predictive optimization recommendations based on usage patterns
-• Real-time system health scoring with actionable insights
-• Automated benchmark testing with performance comparison
-• Integration-ready architecture for enterprise environments
-
-🔮 FUTURE ENHANCEMENTS & RESEARCH DIRECTIONS
-═══════════════════════════════════════════════════════════════
-
-SHORT-TERM ENHANCEMENTS (3-6 months):
-
-1. Advanced Machine Learning Integration
-   • TensorFlow/PyTorch integration for deep learning
-   • Neural network models for complex pattern recognition
-   • Reinforcement learning for optimization strategies
-   • Natural language processing for log analysis
-
-2. Cloud Integration and Remote Monitoring
-   • Cloud-based data storage and synchronization
-   • Multi-system monitoring dashboard
-   • Remote system management capabilities
-   • Cloud-based AI model training and deployment
-
-3. Enhanced Visualization and Reporting
-   • 3D performance visualizations
-   • Interactive dashboard customization
-   • Advanced statistical analysis tools
-   • Real-time collaboration features
-
-MEDIUM-TERM DEVELOPMENTS (6-12 months):
-
-1. Enterprise-grade Features
-   • Role-based access control
-   • Audit logging and compliance reporting
-   • Integration with enterprise monitoring systems
-   • Scalable architecture for large deployments
-
-2. Mobile and Web Interfaces
-   • Responsive web dashboard
-   • Mobile companion applications
-   • Progressive web app (PWA) implementation
-   • Cross-device synchronization
-
-3. Advanced Analytics Platform
-   • Big data analytics integration
-   • Predictive maintenance algorithms
-   • Performance trend analysis
-   • Capacity planning tools
-
-LONG-TERM VISION (1-2 years):
-
-1. Autonomous System Management
-   • Fully automated optimization execution
-   • Self-healing system capabilities
-   • Intelligent resource allocation
-   • Predictive failure prevention
-
-2. Ecosystem Integration
-   • IoT device monitoring integration
-   • Container and virtualization support
-   • Cloud service monitoring
-   • Microservices architecture support
-
-3. Research and Development Platform
-   • Open API for third-party integrations
-   • Plugin architecture for extensibility
-   • Research collaboration tools
-   • Academic partnership programs
-
-🎓 EDUCATIONAL VALUE & LEARNING OUTCOMES
-═══════════════════════════════════════════════════════════════
-
-COMPUTER SCIENCE CONCEPTS DEMONSTRATED:
-
-1. Software Engineering Principles
-   • Object-oriented programming and design patterns
-   • Software architecture and system design
-   • Code organization and modular development
-   • Testing strategies and quality assurance
-   • Documentation and maintenance practices
-
-2. Data Structures and Algorithms
-   • Efficient data storage and retrieval
-   • Real-time data processing algorithms
-   • Search and sorting implementations
-   • Graph algorithms for system relationships
-   • Optimization algorithms for performance tuning
-
-3. Database Management
-   • Relational database design and implementation
-   • SQL query optimization
-   • Data modeling and normalization
-   • Transaction management and ACID properties
-   • Performance monitoring and tuning
-
-4. Artificial Intelligence and Machine Learning
-   • Statistical analysis and data mining
-   • Pattern recognition and classification
-   • Predictive modeling and forecasting
-   • Expert systems and knowledge representation
-   • Learning algorithms and adaptation
-
-5. Human-Computer Interaction
-   • User interface design principles
-   • Usability testing and evaluation
-   • Accessibility and inclusive design
-   • User experience optimization
-   • Information visualization techniques
-
-PRACTICAL SKILLS DEVELOPMENT:
-
-• Advanced Python programming techniques
-• GUI development with modern frameworks
-• System programming and OS integration
-• Database design and implementation
-• Performance analysis and optimization
-• Project management and collaboration
-• Technical documentation and communication
-
-📈 PERFORMANCE BENCHMARKS & VALIDATION
-═══════════════════════════════════════════════════════════════
-
-APPLICATION PERFORMANCE METRICS:
-
-System Requirements:
-• Minimum RAM: 4GB (Recommended: 8GB+)
-• CPU: Dual-core 2.0GHz (Recommended: Quad-core 2.5GHz+)
-• Storage: 100MB free space (plus data storage)
-• Python 3.8+ with required libraries
-
-Performance Benchmarks:
-• Application startup time: < 3 seconds (cold start)
-• Memory footprint: 30-50MB (depending on data retention)
-• CPU overhead: < 2% during normal operation
-• Data collection frequency: 1-10 seconds (configurable)
-• Chart rendering time: < 100ms for real-time updates
-• Database operations: < 10ms for typical queries
-• Export operations: < 5 seconds for standard reports
-
-Monitoring Accuracy:
-• CPU usage accuracy: ±1% (validated against system tools)
-• Memory usage accuracy: ±0.5% (cross-verified with OS metrics)
-• Disk I/O accuracy: ±5% (within acceptable variance)
-• Network usage accuracy: ±2% (compared to network tools)
-• Temperature readings: ±1°C (where hardware sensors available)
-
-Scalability Metrics:
-• Data retention: Up to 1 million data points without performance degradation
-• Concurrent monitoring: Supports monitoring of 100+ processes simultaneously
-• Database growth: Linear performance up to 1GB database size
-• Export capabilities: Handles datasets up to 100,000 records efficiently
-
-🔒 SECURITY CONSIDERATIONS & BEST PRACTICES
-═══════════════════════════════════════════════════════════════
-
-SECURITY MEASURES IMPLEMENTED:
-
-1. Data Protection
-   • Read-only system monitoring (no unauthorized system modifications)
-   • Secure handling of sensitive system information
-   • Local data storage with encrypted options
-   • User permission validation for all system operations
-   • Audit logging of all optimization actions
-
-2. Access Control
-   • User-based configuration management
-   • Privilege escalation protection
-   • Safe process termination procedures
-   • Controlled system modification capabilities
-   • Administrative action confirmation dialogs
-
-3. Data Privacy
-   • No network transmission of sensitive data without explicit consent
-   • Anonymization options for exported data
-   • Secure deletion of temporary files
-   • Privacy-compliant data retention policies
-   • User control over data collection scope
-
-4. System Integrity
-   • Validation of all system modifications before execution
-   • Rollback capabilities for optimization changes
-   • System state verification and monitoring
-   • Protection against malicious process termination
-   • Safe mode operation for critical system states
-
-COMPLIANCE AND STANDARDS:
-
-• GDPR compliance for data protection
-• Industry standard security practices
-• Open source security guidelines
-• Enterprise security requirements compatibility
-• Academic research ethics compliance
-
-📝 CONCLUSION & PROJECT IMPACT
-═══════════════════════════════════════════════════════════════
-
-The System Performance Analyzer & Optimizer v2.0 represents a comprehensive achievement in modern software development, combining theoretical computer science concepts with practical system         administration and optimization. This project successfully demonstrates the integration of multiple advanced technologies and methodologies to create a practical, educational, and professionally viable software solution.
-
-The application's impact extends beyond its immediate functionality, serving as:
-
-• A comprehensive educational tool for computer science students
-• A practical system administration utility for IT professionals
-• A research platform for performance analysis and optimization
-• A demonstration of modern software development best practices
-• A foundation for future innovations in system monitoring technology
-
-Through its development, this project has achieved its primary objectives while establishing a framework for continued enhancement and adaptation to emerging technologies and user needs.
-
-The combination of theoretical depth, practical implementation, and future-oriented design makes this System Performance Analyzer & Optimizer a significant contribution to the field of system monitoring and optimization tools.
-
-═══════════════════════════════════════════════════════════════
-© 2025 Architechs Team - SE(OS)-VI-T250
-All rights reserved.
-
-For technical support, feature requests, or collaboration opportunities:
-📧 Contact: harshitjasuja70@gmail.com
-🌐 Project Repository: [Available upon request]
-📚 Documentation: Comprehensive user manual included
-🔧 Support: Community-driven development and support"""
-        
-        self.theory_textbox.insert('0.0', content)
-        
-    def create_team_info_content(self):
-        """Create enhanced team information content"""
-        main_container = ctk.CTkScrollableFrame(self.team_tab)
-        main_container.pack(fill='both', expand=True, padx=20, pady=20)
-        
-        # Team title
-        team_title = ctk.CTkLabel(
-            main_container,
-            text="👥 ARCHITECHS TEAM",
-            font=ctk.CTkFont(size=24, weight="bold")
-        )
-        team_title.pack(pady=(0, 10))
-        
-        # Subtitle
-        subtitle = ctk.CTkLabel(
-            main_container,
-            text="SE(OS)-VI-T250 | Advanced System Engineering Project",
-            font=ctk.CTkFont(size=16)
-        )
-        subtitle.pack(pady=(0, 30))
-        
-        # Enhanced team members with roles and contributions
-        members = [
-            {
-                'role': '👑 Team Lead & System Architect',
-                'name': 'Harshit Jasuja',
-                'id': '220211228',
-                'email': 'harshitjasuja70@gmail.com',
-                'specialization': 'System Architecture & AI Implementation',
-                'contributions': 'Project leadership, AI engine design, system integration, performance optimization'
-            },
-            {
-                'role': '💻 Lead Developer & UI/UX Designer',
-                'name': 'Yashika Dixit',
-                'id': '220211228',
-                'email': 'yashikadixit1611@gmail.com',
-                'specialization': 'GUI Development & User Experience',
-                'contributions': 'CustomTkinter implementation, user interface design, data visualization, user experience optimization'
-            },
-            {
-                'role': '⚙️ Performance Engineer & QA Lead',
-                'name': 'Shivendra Srivastava',
-                'id': '220211349',
-                'email': 'shivendrasri999@gmail.com',
-                'specialization': 'Performance Optimization & Testing',
-                'contributions': 'Performance monitoring algorithms, testing framework, optimization strategies, quality assurance'
-            }
-        ]
-        
-        for member in members:
-            self.create_enhanced_member_card(main_container, member)
-            
-        # Project achievements
-        achievements_frame = ctk.CTkFrame(main_container)
-        achievements_frame.pack(fill='x', pady=20)
-        
-        achievements_title = ctk.CTkLabel(
-            achievements_frame,
-            text="🏆 Project Achievements & Milestones",
-            font=ctk.CTkFont(size=16, weight="bold")
-        )
-        achievements_title.pack(pady=(15, 10))
-        
-        achievements = [
-            "✅ Successfully implemented real-time system monitoring with <2% CPU overhead",
-            "✅ Developed AI-powered optimization engine with 85% accuracy in bottleneck detection",
-            "✅ Created modern, responsive GUI using CustomTkinter framework",
-            "✅ Implemented comprehensive database system for performance data persistence",
-            "✅ Achieved cross-platform compatibility (Windows, macOS, Linux)",
-            "✅ Integrated advanced data visualization with real-time chart updates",
-            "✅ Developed comprehensive benchmark testing suite",
-            "✅ Created detailed technical documentation and user guides"
-        ]
-        
-        for achievement in achievements:
-            achievement_label = ctk.CTkLabel(
-                achievements_frame,
-                text=achievement,
-                font=ctk.CTkFont(size=11),
-                anchor='w'
-            )
-            achievement_label.pack(fill='x', padx=20, pady=2)
-            
-        # Project timeline
-        timeline_frame = ctk.CTkFrame(main_container)
-        timeline_frame.pack(fill='x', pady=20)
-        
-        timeline_title = ctk.CTkLabel(
-            timeline_frame,
-            text="📅 Development Timeline",
-            font=ctk.CTkFont(size=16, weight="bold")
-        )
-        timeline_title.pack(pady=(15, 10))
-        
-        timeline_events = [
-            "Month 1-2: Requirements analysis, system design, and architecture planning",
-            "Month 3-4: Core monitoring system implementation and GUI development",
-            "Month 5: AI engine development and optimization algorithms",
-            "Month 6: Testing, documentation, and final integration"
-        ]
-        
-        for event in timeline_events:
-            event_label = ctk.CTkLabel(
-                timeline_frame,
-                text=f"• {event}",
-                font=ctk.CTkFont(size=11),
-                anchor='w'
-            )
-            event_label.pack(fill='x', padx=20, pady=2)
-            
-        # Contact and collaboration
-        contact_frame = ctk.CTkFrame(main_container)
-        contact_frame.pack(fill='x', pady=20)
-        
-        contact_title = ctk.CTkLabel(
-            contact_frame,
-            text="📞 Contact & Collaboration",
-            font=ctk.CTkFont(size=16, weight="bold")
-        )
-        contact_title.pack(pady=(15, 10))
-        
-        contact_text = ctk.CTkLabel(
-            contact_frame,
-            text="We welcome collaboration, feedback, and contributions to this project.\n"
-                 "For technical discussions, feature requests, or partnership opportunities:\n\n"
-                 "📧 Primary Contact: harshitjasuja70@gmail.com\n"
-                 "👥 Team: Architechs Team - SE(OS)-VI-T250\n"
-                 "🎓 Institution: [Your Institution Name]\n"
-                 "🔗 Project Status: Active Development\n"
-                 "📚 Documentation: Comprehensive guides available",
-            font=ctk.CTkFont(size=12),
-            justify='center'
-        )
-        contact_text.pack(pady=(0, 15))
-        
-    def create_enhanced_member_card(self, parent, member):
-        """Create enhanced team member card with detailed information"""
-        member_frame = ctk.CTkFrame(parent)
-        member_frame.pack(fill='x', pady=15)
-        
-        # Header with role and name
-        header_frame = ctk.CTkFrame(member_frame)
-        header_frame.pack(fill='x', padx=15, pady=(15, 10))
-        
-        role_label = ctk.CTkLabel(
-            header_frame,
-            text=member['role'],
-            font=ctk.CTkFont(size=14, weight="bold")
-        )
-        role_label.pack(pady=5)
-        
-        name_label = ctk.CTkLabel(
-            header_frame,
-            text=member['name'],
-            font=ctk.CTkFont(size=18, weight="bold")
-        )
-        name_label.pack()
-        
-        # Details section
-        details_frame = ctk.CTkFrame(member_frame)
-        details_frame.pack(fill='x', padx=15, pady=(0, 15))
-        
-        details_frame.grid_columnconfigure((0, 1), weight=1)
-        
-        # Left column - Basic info
-        left_frame = ctk.CTkFrame(details_frame)
-        left_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
-        
-        ctk.CTkLabel(left_frame, text="📋 Basic Information", 
-                    font=ctk.CTkFont(size=12, weight="bold")).pack(pady=(10, 5))
-        
-        basic_info = [
-            f"🆔 Student ID: {member['id']}",
-            f"📧 Email: {member['email']}",
-            f"🎯 Specialization: {member['specialization']}"
-        ]
-        
-        for info in basic_info:
-            ctk.CTkLabel(left_frame, text=info, font=ctk.CTkFont(size=10)).pack(anchor='w', padx=10, pady=2)
-        
-        # Right column - Contributions
-        right_frame = ctk.CTkFrame(details_frame)
-        right_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
-        
-        ctk.CTkLabel(right_frame, text="🚀 Key Contributions", 
-                    font=ctk.CTkFont(size=12, weight="bold")).pack(pady=(10, 5))
-        
-        contrib_label = ctk.CTkLabel(
-            right_frame,
-            text=member['contributions'],
-            font=ctk.CTkFont(size=10),
-            wraplength=300,
-            justify='left'
-        )
-        contrib_label.pack(anchor='w', padx=10, pady=(0, 10))
         
     def create_help_content(self):
         """Create enhanced help and FAQ content"""
@@ -1931,8 +1021,6 @@ For technical support, feature requests, or collaboration opportunities:
         support_text = ctk.CTkLabel(
             support_frame,
             text="Need additional help? Our development team is here to assist!\n\n"
-                 "📧 Technical Support: harshitjasuja70@gmail.com\n"
-                 "👥 Development Team: Architechs Team - SE(OS)-VI-T250\n"
                  "📚 Documentation: Comprehensive guides available in Theory tab\n"
                  "🔄 Updates: Regular updates and improvements\n\n"
                  "When reporting issues, please include:\n"
@@ -2324,7 +1412,7 @@ For technical support, feature requests, or collaboration opportunities:
     def update_enhanced_ai_status(self):
         """Update enhanced AI status display"""
         if hasattr(self, 'ai_status_label'):
-            status = f"🧠 Analysis complete. Health Score: {self.system_health_score:.0f}%. Found {len(self.optimization_suggestions)} recommendations."
+            status = f"📊 Analysis complete. Health Score: {self.system_health_score:.0f}%. Found {len(self.optimization_suggestions)} recommendations."
             self.ai_status_label.configure(text=status)
             
         if hasattr(self, 'suggestions_textbox'):
@@ -2413,88 +1501,7 @@ For technical support, feature requests, or collaboration opportunities:
             error_msg = f"Deep analysis failed: {str(e)}"
             self.root.after(0, lambda: self.ai_status_label.configure(text=f"❌ {error_msg}"))
             
-    def apply_optimizations(self):
-        """Apply enhanced optimizations"""
-        if not self.optimization_suggestions:
-            import tkinter.messagebox as messagebox
-            messagebox.showinfo("No Optimizations", "No optimization suggestions available.")
-            return
             
-        # Show detailed confirmation dialog
-        import tkinter.messagebox as messagebox
-        result = messagebox.askyesno(
-            "Apply Optimizations",
-            f"Apply {len(self.optimization_suggestions)} optimization suggestions?\n\n"
-            "This may include:\n"
-            "• Memory cleanup and optimization\n"
-            "• Process priority adjustments\n"
-            "• System cache clearing\n"
-            "• Temporary file cleanup\n"
-            "• Network optimization\n\n"
-            "⚠️ Some optimizations may require administrator privileges.\n"
-            "Continue?"
-        )
-        
-        if result:
-            threading.Thread(target=self.perform_enhanced_optimizations, daemon=True).start()
-            
-    def perform_enhanced_optimizations(self):
-        """Perform enhanced system optimizations"""
-        try:
-            self.root.after(0, lambda: self.ai_status_label.configure(text="⚡ Applying optimizations..."))
-            
-            optimization_results = []
-            
-            # Simulate various optimizations
-            optimizations = [
-                ("Memory cleanup", 2),
-                ("Process optimization", 1.5),
-                ("Cache clearing", 1),
-                ("Temporary file cleanup", 2.5),
-                ("Registry optimization", 1),
-                ("Network optimization", 1.5)
-            ]
-            
-            for opt_name, duration in optimizations:
-                self.root.after(0, lambda name=opt_name: self.ai_status_label.configure(text=f"⚡ {name}..."))
-                time.sleep(duration)
-                optimization_results.append(f"✅ {opt_name} completed")
-                
-                # Log optimization to database
-                try:
-                    cursor = self.conn.cursor()
-                    cursor.execute('''
-                        INSERT INTO optimization_history 
-                        (timestamp, optimization_type, description, success)
-                        VALUES (?, ?, ?, ?)
-                    ''', (datetime.now(), opt_name, f"Automated {opt_name}", True))
-                    self.conn.commit()
-                except:
-                    pass
-                    
-            # Force garbage collection
-            gc.collect()
-            
-            # Update system health score
-            self.system_health_score = min(100, self.system_health_score + 10)
-            
-            self.root.after(0, lambda: self.ai_status_label.configure(text="✅ All optimizations completed successfully!"))
-            
-            # Show results
-            results_text = "Optimization Results:\n\n" + "\n".join(optimization_results)
-            import tkinter.messagebox as messagebox
-            self.root.after(0, lambda: messagebox.showinfo("Optimization Complete", results_text))
-            
-            # Clear suggestions
-            self.optimization_suggestions.clear()
-            self.root.after(0, lambda: self.suggestions_textbox.delete('0.0', 'end'))
-            self.root.after(0, lambda: self.suggestions_textbox.insert('0.0', "✅ System optimized. No further recommendations at this time."))
-            
-        except Exception as e:
-            error_msg = f"Optimization failed: {str(e)}"
-            self.root.after(0, lambda: self.ai_status_label.configure(text=f"❌ {error_msg}"))
-            import tkinter.messagebox as messagebox
-            self.root.after(0, lambda: messagebox.showerror("Optimization Error", error_msg))
             
     def populate_system_info(self):
         """Populate detailed system information textbox"""
@@ -2506,7 +1513,6 @@ For technical support, feature requests, or collaboration opportunities:
             
             # Basic system info
             info_lines.append("📋 BASIC INFORMATION:")
-            info_lines.append(f"Hostname: {self.system_info['hostname']}")
             info_lines.append(f"Platform: {self.system_info['platform']}")
             info_lines.append(f"Processor: {self.system_info['processor']}")
             info_lines.append(f"Architecture: {self.system_info['architecture']}")
@@ -2539,12 +1545,6 @@ For technical support, feature requests, or collaboration opportunities:
                 info_lines.append(f"Free Disk Space: {disk.free / (1024**3):.2f} GB")
             except:
                 info_lines.append("Unable to retrieve current status")
-            info_lines.append("")
-            
-            # Network interfaces
-            info_lines.append("🌐 NETWORK INTERFACES:")
-            for interface in self.system_info['network_interfaces']:
-                info_lines.append(f"• {interface}")
             info_lines.append("")
             
             # System uptime
@@ -2780,110 +1780,9 @@ For technical support, feature requests, or collaboration opportunities:
         import tkinter.messagebox as messagebox
         messagebox.showwarning("Kill Process", "Process termination feature requires administrative privileges.\nThis is a demonstration version.")
         
-    def run_system_cleanup(self):
-        """Run comprehensive system cleanup"""
-        import tkinter.messagebox as messagebox
-        
-        result = messagebox.askyesno(
-            "System Cleanup",
-            "Run comprehensive system cleanup?\n\n"
-            "This will:\n"
-            "• Clear temporary files\n"
-            "• Empty recycle bin\n"
-            "• Clear system cache\n"
-            "• Optimize memory usage\n\n"
-            "Continue?"
-        )
-        
-        if result:
-            threading.Thread(target=self.perform_system_cleanup, daemon=True).start()
             
-    def perform_system_cleanup(self):
-        """Perform system cleanup operations"""
-        try:
-            cleanup_steps = [
-                ("Clearing temporary files", 2),
-                ("Emptying recycle bin", 1.5),
-                ("Clearing system cache", 2),
-                ("Optimizing memory", 1),
-                ("Updating system health", 0.5)
-            ]
             
-            for step_name, duration in cleanup_steps:
-                time.sleep(duration)
-                # In a real implementation, perform actual cleanup operations
-                
-            # Force garbage collection
-            gc.collect()
             
-            # Update system health score
-            self.system_health_score = min(100, self.system_health_score + 5)
-            
-            import tkinter.messagebox as messagebox
-            self.root.after(0, lambda: messagebox.showinfo("Cleanup Complete", "System cleanup completed successfully!\n\nSystem performance has been optimized."))
-            
-        except Exception as e:
-            import tkinter.messagebox as messagebox
-            self.root.after(0, lambda: messagebox.showerror("Cleanup Error", f"System cleanup failed: {str(e)}"))
-            
-    def emergency_optimization(self):
-        """Run emergency system optimization"""
-        import tkinter.messagebox as messagebox
-        
-        result = messagebox.askquestion(
-            "Emergency Optimization",
-            "⚠️ EMERGENCY OPTIMIZATION ⚠️\n\n"
-            "This will perform aggressive system optimization:\n"
-            "• Force close non-essential processes\n"
-            "• Clear all caches and temporary data\n"
-            "• Optimize system settings\n"
-            "• Free maximum available memory\n\n"
-            "⚠️ This may close unsaved work!\n\n"
-            "Continue with emergency optimization?",
-            icon='warning'
-        )
-        
-        if result == 'yes':
-            threading.Thread(target=self.perform_emergency_optimization, daemon=True).start()
-            
-    def perform_emergency_optimization(self):
-        """Perform emergency optimization procedures"""
-        try:
-            import tkinter.messagebox as messagebox
-            self.root.after(0, lambda: messagebox.showwarning("Emergency Optimization", "Emergency optimization started.\n\nPlease wait..."))
-            
-            emergency_steps = [
-                ("Analyzing critical system state", 1),
-                ("Terminating non-essential processes", 2),
-                ("Aggressive memory cleanup", 2),
-                ("Cache and temporary file purge", 1.5),
-                ("System priority optimization", 1),
-                ("Emergency health restoration", 1)
-            ]
-            
-            for step_name, duration in emergency_steps:
-                time.sleep(duration)
-                # In a real implementation, perform actual emergency optimization
-                
-            # Aggressive garbage collection
-            for _ in range(3):
-                gc.collect()
-                time.sleep(0.5)
-                
-            # Restore system health score
-            self.system_health_score = min(100, self.system_health_score + 20)
-            
-            self.root.after(0, lambda: messagebox.showinfo("Emergency Optimization Complete", 
-                "🚨 Emergency optimization completed!\n\n"
-                "System has been restored to optimal state.\n"
-                f"New Health Score: {self.system_health_score:.0f}%\n\n"
-                "Monitor system performance and restart if issues persist."))
-            
-        except Exception as e:
-            import tkinter.messagebox as messagebox
-            self.root.after(0, lambda: messagebox.showerror("Emergency Optimization Failed", 
-                f"Emergency optimization encountered an error:\n{str(e)}\n\n"
-                "Consider manual system restart."))
                 
     def update_analytics(self, value):
         """Update analytics data based on selected time range"""
@@ -3069,7 +1968,7 @@ For technical support, feature requests, or collaboration opportunities:
         
         # Clean up
         del large_list, copied_list
-        gc.collect()
+        
         
         # Calculate memory score
         memory_score = 1000 / (mem_alloc_time + mem_access_time + mem_copy_time)
@@ -3184,9 +2083,6 @@ For technical support, feature requests, or collaboration opportunities:
         """Toggle data logging to database"""
         self.data_logging = self.logging_var.get()
         
-    def toggle_auto_optimize(self):
-        """Toggle automatic optimization"""
-        self.auto_optimize = self.auto_optimize_var.get()
         
     def save_settings(self):
         """Save current settings to file"""
@@ -3196,8 +2092,7 @@ For technical support, feature requests, or collaboration opportunities:
                 'refresh_rate': self.refresh_rate,
                 'font_size': self.font_size,
                 'notifications_enabled': self.notifications_enabled,
-                'auto_optimize': self.auto_optimize,
-                'data_logging': self.data_logging,
+                        'data_logging': self.data_logging,
                 'alert_thresholds': self.alert_thresholds
             }
             
@@ -3218,7 +2113,6 @@ For technical support, feature requests, or collaboration opportunities:
                 self.refresh_rate = settings.get('refresh_rate', 1000)
                 self.font_size = settings.get('font_size', 12)
                 self.notifications_enabled = settings.get('notifications_enabled', True)
-                self.auto_optimize = settings.get('auto_optimize', False)
                 self.data_logging = settings.get('data_logging', True)
                 self.alert_thresholds.update(settings.get('alert_thresholds', {}))
                 
@@ -3272,7 +2166,7 @@ For technical support, feature requests, or collaboration opportunities:
                 # System info
                 system_info_text = f"""
                 <b>System Information:</b><br/>
-                Hostname: {self.system_info['hostname']}<br/>
+
                 Platform: {self.system_info['platform']}<br/>
                 CPU Cores: {self.system_info['cpu_count']}<br/>
                 Total Memory: {self.system_info['memory_total'] / (1024**3):.2f} GB<br/>
@@ -3404,7 +2298,6 @@ For technical support, feature requests, or collaboration opportunities:
                     pass
                     
             # Final cleanup
-            gc.collect()
             
         except Exception as e:
             print(f"Cleanup error: {e}")
@@ -3450,7 +2343,7 @@ if __name__ == "__main__":
         sys.exit(1)
     
     # Check required modules
-    required_modules = ['customtkinter', 'matplotlib', 'psutil', 'numpy']
+    required_modules = ['customtkinter', 'matplotlib', 'psutil']
     missing_modules = []
     
     for module in required_modules:
@@ -3467,40 +2360,32 @@ if __name__ == "__main__":
         print(f"pip install {' '.join(missing_modules)}")
         print("\n🔧 For full functionality, also install:")
         print("pip install reportlab  # For PDF export")
-        print("pip install requests   # For cloud features")
         sys.exit(1)
     
     # Print enhanced startup information
     print("=" * 70)
     print("🚀 SYSTEM PERFORMANCE ANALYZER & OPTIMIZER v2.0")
     print("   Advanced System Monitoring and Optimization Suite")
-    print("   Developed by Architechs Team - SE(OS)-VI-T250")
+    print("   Clean system monitoring and performance analysis application")
     print("=" * 70)
     print("✨ ENHANCED FEATURES:")
     print("   📊 Real-time performance monitoring with 6 metrics")
-    print("   🤖 Advanced AI-powered optimization engine")
+    print("   📊 Performance analysis and recommendations")
     print("   📈 Comprehensive analytics and historical data")
     print("   ⚡ System benchmark testing suite")
     print("   💻 Detailed system information and diagnostics")
     print("   🎨 Modern CustomTkinter interface with themes")
     print("   📄 Enhanced reporting (PDF/CSV export)")
     print("   🗄️ SQLite database for data persistence")
-    print("   🚨 Emergency optimization capabilities")
-    print("   🧹 System cleanup and maintenance tools")
-    print("=" * 70)
-    print("👥 DEVELOPMENT TEAM:")
-    print("   👑 Harshit Jasuja (Team Lead) - System Architecture & AI")
-    print("   💻 Yashika Dixit (Developer) - GUI Development & UX")
-    print("   ⚙️ Shivendra Srivastava (Developer) - Performance & QA")
     print("=" * 70)
     print("📋 SYSTEM REQUIREMENTS:")
     print(f"   ✅ Python {sys.version_info.major}.{sys.version_info.minor}+ (Current: {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro})")
-    print("   ✅ CustomTkinter, matplotlib, psutil, numpy")
-    print("   📦 Optional: reportlab (PDF), requests (cloud features)")
+    print("   ✅ CustomTkinter, matplotlib, psutil")
+    print("   📦 Optional: reportlab (PDF export)")
     print("=" * 70)
     print("🔧 STARTING APPLICATION...")
     print("   Initializing monitoring systems...")
-    print("   Loading AI optimization engine...")
+    print("   Loading performance analysis...")
     print("   Preparing user interface...")
     print()
     
@@ -3511,4 +2396,3 @@ if __name__ == "__main__":
         print(f"\n❌ Application startup failed: {e}")
         print("Please check system requirements and try again.")
         sys.exit(1)
-
