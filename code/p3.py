@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
 System Performance Analyzer - macOS Optimized
-Team: Architechs (SE(OS)-VI-T250)
-Created for macOS 13-inch screen optimization
+
 """
 
 import tkinter as tk
