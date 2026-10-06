@@ -8,7 +8,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import psutil
 import platform
-import subprocess
 import threading
 import time
 import json
@@ -16,11 +15,10 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-import numpy as np
 from collections import deque
 
 class SplashScreen:
-    """Beautiful splash screen with team branding"""
+    """Application splash screen"""
     def __init__(self, root):
         self.root = root
         self.splash = tk.Toplevel(root)
@@ -55,18 +53,6 @@ class SplashScreen:
                                font=("SF Pro Display", 28, "bold"),
                                fg="#4ecdc4", bg="#1a1a2e")
         title_label2.pack(pady=(0, 20))
-        
-        # Team info
-        team_frame = tk.Frame(main_frame, bg="#1a1a2e")
-        team_frame.pack(pady=20)
-        
-        tk.Label(team_frame, text="Team: Architechs", 
-                font=("SF Pro Display", 14, "bold"),
-                fg="#ffe66d", bg="#1a1a2e").pack()
-        
-        tk.Label(team_frame, text="Team ID: SE(OS)-VI-T250", 
-                font=("SF Pro Display", 12),
-                fg="#a8e6cf", bg="#1a1a2e").pack(pady=5)
         
         # Progress bar
         self.progress_var = tk.DoubleVar()
@@ -119,8 +105,8 @@ class SystemAnalyzer:
         self.dark_mode = True
         
     def setup_window(self):
-        """Configure main window for macOS 13-inch screen"""
-        self.root.title("System Performance Analyzer - Architechs")
+        """Configure the main application window"""
+        self.root.title("System Performance Analyzer")
         self.root.geometry("1000x700")
         self.root.minsize(900, 600)
         
@@ -195,7 +181,7 @@ class SystemAnalyzer:
         # Help menu
         help_menu = tk.Menu(menubar, tearoff=0, bg="#2c2c54", fg="white")
         menubar.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="About Team", command=self.show_about)
+        help_menu.add_command(label="About", command=self.show_about)
         
     def create_ui(self):
         """Create main user interface"""
@@ -434,7 +420,7 @@ class SystemAnalyzer:
         self.create_process_viewer(process_frame)
         
     def create_footer(self, parent):
-        """Create footer with team credits"""
+        """Create application footer"""
         footer_frame = tk.Frame(parent, bg="#16213e", relief="raised", bd=1)
         footer_frame.pack(fill="x")
         
@@ -442,7 +428,7 @@ class SystemAnalyzer:
         credits_frame = tk.Frame(footer_frame, bg="#16213e")
         credits_frame.pack(side="left", padx=20, pady=10)
         
-        tk.Label(credits_frame, text="© 2024 Team Architechs | SE(OS)-VI-T250", 
+        tk.Label(credits_frame, text="System Performance Analyzer", 
                 font=("SF Pro Display", 10),
                 fg="#a8e6cf", bg="#16213e").pack()
         
@@ -685,7 +671,7 @@ Command Line: {' '.join(process.cmdline()) if process.cmdline() else 'N/A'}
         # Network card
         net_io = psutil.net_io_counters()
         self.network_card.value_label.config(text="Active")
-        self.network_card.progress_var.set(50)  # Placeholder for network activity
+        self.network_card.progress_var.set(min((net_io.bytes_sent + net_io.bytes_recv) / (1024**3) * 10, 100))
         self.network_card.info_label.config(text=f"Sent: {net_io.bytes_sent / 1024**2:.1f} MB")
         
     def update_cpu_graph(self):
@@ -998,23 +984,13 @@ Command Line: {' '.join(process.cmdline()) if process.cmdline() else 'N/A'}
             'cpu': cpu_info,
             'memory': memory_info,
             'disk': disk_info,
-            'network': network_info,
-            'team_info': {
-                'name': 'Architechs',
-                'id': 'SE(OS)-VI-T250',
-                'members': [
-                    {'name': 'Harshit Jasuja', 'id': '220211228', 'email': 'harshitjasuja70@gmail.com'},
-                    {'name': 'Shivendra Srivastava', 'id': '220211349', 'email': 'shivendrasri999@gmail.com'},
-                    {'name': 'Yashika Dixit', 'id': '22022577', 'email': 'yashikadixit1611@gmail.com'}
-                ]
-            }
+            'network': network_info
         }
         
     def format_report_text(self, data):
         """Format report data as readable text"""
         report = f"""SYSTEM PERFORMANCE REPORT
 Generated: {data['timestamp']}
-Team: {data['team_info']['name']} ({data['team_info']['id']})
 
 === SYSTEM INFORMATION ===
 System: {data['system']['system']}
@@ -1048,16 +1024,9 @@ Bytes Sent: {data['network']['bytes_sent']:,}
 Bytes Received: {data['network']['bytes_recv']:,}
 Packets Sent: {data['network']['packets_sent']:,}
 Packets Received: {data['network']['packets_recv']:,}
-
-=== TEAM MEMBERS ==="""
-
-        for member in data['team_info']['members']:
-            report += f"""
-{member['name']} (ID: {member['id']})
-Email: {member['email']}"""
-
+"""
         return report
-        
+
     def open_process_manager(self):
         """Switch to process tab"""
         # Switch to processes tab
@@ -1143,85 +1112,14 @@ Email: {member['email']}"""
         cancel_btn.pack(side="right")
         
     def show_about(self):
-        """Show about team dialog"""
-        about_window = tk.Toplevel(self.root)
-        about_window.title("About Team Architechs")
-        about_window.geometry("500x400")
-        about_window.configure(bg="#1a1a2e")
-        about_window.resizable(False, False)
-        
-        # Center the window
-        about_window.update_idletasks()
-        x = (about_window.winfo_screenwidth() // 2) - (500 // 2)
-        y = (about_window.winfo_screenheight() // 2) - (400 // 2)
-        about_window.geometry(f"500x400+{x}+{y}")
-        
-        # About content
-        main_frame = tk.Frame(about_window, bg="#1a1a2e")
-        main_frame.pack(fill="both", expand=True, padx=20, pady=20)
-        
-        # App title
-        tk.Label(main_frame, text="System Performance Analyzer", 
-                font=("SF Pro Display", 18, "bold"),
-                fg="#4ecdc4", bg="#1a1a2e").pack(pady=(0, 10))
-        
-        # Team info
-        team_frame = tk.Frame(main_frame, bg="#16213e", relief="raised", bd=1)
-        team_frame.pack(fill="x", pady=10)
-        
-        team_content = tk.Frame(team_frame, bg="#16213e")
-        team_content.pack(padx=20, pady=15)
-        
-        tk.Label(team_content, text="Team: Architechs", 
-                font=("SF Pro Display", 16, "bold"),
-                fg="#ffe66d", bg="#16213e").pack()
-        
-        tk.Label(team_content, text="Team ID: SE(OS)-VI-T250", 
-                font=("SF Pro Display", 14),
-                fg="#a8e6cf", bg="#16213e").pack(pady=5)
-        
-        # Team members
-        members_frame = tk.Frame(main_frame, bg="#16213e", relief="raised", bd=1)
-        members_frame.pack(fill="both", expand=True, pady=10)
-        
-        members_content = tk.Frame(members_frame, bg="#16213e")
-        members_content.pack(padx=20, pady=15, fill="both", expand=True)
-        
-        tk.Label(members_content, text="Team Members:", 
-                font=("SF Pro Display", 14, "bold"),
-                fg="#ff6b6b", bg="#16213e").pack(pady=(0, 10))
-        
-        members = [
-            ("Team Lead", "Harshit Jasuja", "220211228", "harshitjasuja70@gmail.com"),
-            ("Member 2", "Shivendra Srivastava", "220211349", "shivendrasri999@gmail.com"),
-            ("Member 3", "Yashika Dixit", "22022577", "yashikadixit1611@gmail.com")
-        ]
-        
-        for role, name, student_id, email in members:
-            member_frame = tk.Frame(members_content, bg="#1a1a2e", relief="flat", bd=1)
-            member_frame.pack(fill="x", pady=5)
-            
-            info_frame = tk.Frame(member_frame, bg="#1a1a2e")
-            info_frame.pack(padx=15, pady=10)
-            
-            tk.Label(info_frame, text=f"{role}: {name}", 
-                    font=("SF Pro Display", 12, "bold"),
-                    fg="#4ecdc4", bg="#1a1a2e").pack(anchor="w")
-            
-            tk.Label(info_frame, text=f"Student ID: {student_id}", 
-                    font=("SF Pro Display", 10),
-                    fg="#a8e6cf", bg="#1a1a2e").pack(anchor="w")
-            
-            tk.Label(info_frame, text=f"Email: {email}", 
-                    font=("SF Pro Display", 10),
-                    fg="#ffe66d", bg="#1a1a2e").pack(anchor="w")
-        
-        # Close button
-        close_btn = tk.Button(main_frame, text="Close", command=about_window.destroy,
-                             bg="#ff6b6b", fg="white", font=("SF Pro Display", 12, "bold"),
-                             relief="flat", padx=30, pady=5)
-        close_btn.pack(pady=10)
-        
+        """Show application information"""
+        messagebox.showinfo(
+            "About",
+            "System Performance Analyzer\n\n"
+            "A Python-based system monitoring application using "
+            "Tkinter, psutil, and Matplotlib."
+        )
+
     def on_closing(self):
         """Handle application closing"""
         self.monitoring = False
